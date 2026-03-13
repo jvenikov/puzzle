@@ -220,7 +220,10 @@ function runLevelTimer() {
   levelTimerId = setInterval(function() {
     levelTimerSeconds -= 1;
     renderTimer();
-    if (levelTimerSeconds > 0) return;
+    if (levelTimerSeconds > 0) {
+      if (levelTimerSeconds <= 10 && typeof Sounds !== 'undefined') Sounds.timerTick();
+      return;
+    }
     clearLevelTimer();
     setOutTimeOverlay(true);
   }, 1000);
@@ -803,6 +806,7 @@ function updateBlackholeDisplay() {
 
 function shakeBooster(btn) {
   if (!btn || btn.classList.contains('booster-shake')) return;
+  if (typeof Sounds !== 'undefined') Sounds.boosterEmpty();
   btn.classList.add('booster-shake');
   setTimeout(function() { btn.classList.remove('booster-shake'); }, 340);
 }
@@ -1242,6 +1246,7 @@ function startDynamiteExplosion(fig) {
   var beepCount = 0;
   function doBeep() {
     beepCount++;
+    if (typeof Sounds !== 'undefined') Sounds.dynamiteBeep();
     // Visual beep ring
     var ring = document.createElement('div');
     ring.className = 'dynamite-beep-ring';
@@ -1287,6 +1292,7 @@ function removeTargetElement(el) {
 
 function triggerDynamiteExplosion(fig, dynEl, cx, cy) {
   if (dynEl.parentNode) dynEl.parentNode.removeChild(dynEl);
+  if (typeof Sounds !== 'undefined') Sounds.dynamiteExplode();
   spawnExplosionParticles(cx, cy, fig._color || '#888888');
   // Screen shake
   document.body.classList.remove('explosion-shake');
@@ -1570,6 +1576,7 @@ function startBlackholeSelectMode() {
 }
 
 function startBlackholeEffect(fig) {
+  if (typeof Sounds !== 'undefined') Sounds.blackhole();
   var rect = fig.getBoundingClientRect();
   var cx = rect.left + rect.width  / 2;
   var cy = rect.top  + rect.height / 2;
@@ -1656,6 +1663,7 @@ function resetBlackholeState() {
 
 function activateFreezeEffect() {
   if (freezeActive) return;
+  if (typeof Sounds !== 'undefined') Sounds.freeze();
   document.body.classList.add('frozen');
   var frameEl = document.getElementById('frame');
   if (frameEl) frameEl.classList.add('frozen');
@@ -1687,6 +1695,7 @@ function activateFreeze() {
 
 function deactivateFreeze() {
   if (!freezeActive) return;
+  if (typeof Sounds !== 'undefined') Sounds.thaw();
   freezeActive = false;
   if (freezeTimerId) { clearTimeout(freezeTimerId); freezeTimerId = null; }
   // Remove world freeze
@@ -1894,6 +1903,7 @@ if (freezeBtnHud) {
     if (!freezeBtnHud.classList.contains('unlocked')) return;
     if (freezeActive) return;                     // already frozen
     if (freezeCharges <= 0) { shakeBooster(freezeBtnHud); return; }
+    if (typeof Sounds !== 'undefined') Sounds.boosterClick();
     freezeCharges--;
     updateFreezeDisplay();
     activateFreezeEffect();
@@ -1907,6 +1917,7 @@ if (dynamiteBtnHud) {
     if (!dynamiteBtnHud.classList.contains('unlocked')) return;
     if (dynamiteFigActive) return;               // already in select mode
     if (dynamiteCharges <= 0) { shakeBooster(dynamiteBtnHud); return; }
+    if (typeof Sounds !== 'undefined') Sounds.boosterClick();
     dynamiteCharges--;
     updateDynamiteDisplay();
     startDynamiteSelectMode();
@@ -1920,6 +1931,7 @@ if (blackholeBtnHud) {
     if (!blackholeBtnHud.classList.contains('unlocked')) return;
     if (blackholeFigActive) return;
     if (blackholeCharges <= 0) { shakeBooster(blackholeBtnHud); return; }
+    if (typeof Sounds !== 'undefined') Sounds.boosterClick();
     blackholeCharges--;
     updateBlackholeDisplay();
     startBlackholeSelectMode();
@@ -1931,6 +1943,15 @@ window.addEventListener('resize', function() {
   resizePCanvas();
   scaleGame();
 });
+
+// ── UI click sound for all regular buttons ────────────────────────────────────
+
+document.addEventListener('pointerdown', function(e) {
+  var btn = e.target.closest('button');
+  if (btn && !btn.classList.contains('booster-btn') && typeof Sounds !== 'undefined') {
+    Sounds.uiClick();
+  }
+}, { passive: true });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
