@@ -64,6 +64,7 @@ var boosterHandAnim = null;
 var freezeActive = false;
 var freezeTimerId = null;
 var freezeSceneOverlay = null;
+var addTimeReward = false;
 
 var tutorial = {
   levelIndex: 0,
@@ -1830,6 +1831,15 @@ function setLevel(value) {
   transitionToLevel(Math.max(0, Math.min(LEVELS.length - 1, parseInt(value) - 1)));
 }
 
+function rewardResult(value) {
+  if (value == "true" ? true : false) {
+    if (addTimeReward) {
+      addBonusTime(60);
+      addTimeReward = false;
+    }
+  }
+}
+
 // ── Nav ───────────────────────────────────────────────────────────────────────
 
 var levelLabel = document.getElementById('level-label');
@@ -1870,7 +1880,8 @@ startBtn.addEventListener('click', function() {
   if (chainBlackholeTut) setTimeout(showBlackholeTutorial, startOverlayFadeMs + 60);
 });
 outTimeContinueBtn.addEventListener('click', function() {
-  addBonusTime(60);
+  addTimeReward = true;
+  window.location = "uniwebview://reward";
 });
 
 var boosterTutorialBtn = document.getElementById('booster-tutorial-btn');
