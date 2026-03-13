@@ -531,6 +531,7 @@ function attachDrag(fig) {
       return;
     }
     if (typeof window.onFigureDragState === 'function') window.onFigureDragState(fig, true);
+    if (typeof Sounds !== 'undefined') Sounds.pickup();
     var prevCol = fig._col, prevRow = fig._row;
     var lastValidCol = prevCol, lastValidRow = prevRow;
     fig.classList.add('dragging');
@@ -619,6 +620,7 @@ function attachDrag(fig) {
       wall.style.transform  = 'scale(1.18)';
       wall.style.filter     = 'brightness(2) drop-shadow(0 0 18px ' + wallHex + ')';
       setTimeout(function() { wall.style.transform = ''; wall.style.filter = ''; }, 300);
+      if (typeof Sounds !== 'undefined') Sounds.wallClear();
       var fr = fig.getBoundingClientRect();
       spawnParticles(fr.left + fr.width * 0.5, fr.top + fr.height * 0.5, fig._color);
       fig.style.transition = 'transform 0.15s ease-out, opacity 0.15s ease-in, filter 0.1s';
@@ -768,6 +770,7 @@ function attachDrag(fig) {
 
     var onUp = function(e) {
       if (typeof window.onFigureDragState === 'function') window.onFigureDragState(fig, false);
+      if (typeof Sounds !== 'undefined') Sounds.drop();
       fig.classList.remove('dragging');
       fig.style.filter = '';
       fig.style.zIndex = 10;
